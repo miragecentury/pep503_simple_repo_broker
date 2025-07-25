@@ -48,6 +48,7 @@ async def get_index_package(
     return HtmlListRenderer(title=package_name).add_items(items).render()
 
 
+@api_router.get("/{package_name}/{package_version}")
 async def get_download_package(
     package_name: PackageName,
     package_version: PackageVersion,
@@ -57,3 +58,21 @@ async def get_download_package(
     index: list[IntegrationPackageIndex] = []
     for integration in integrations:
         index.extend(await integration.get_index())
+
+    package_index: IntegrationPackageIndex | None = next(
+        (package_index for package_index in index if package_index["package_name"] == package_name), None
+    )
+    if package_index is None:
+        raise HTTPException(status_code=404, detail="Package not found")
+
+    package_version_list: list[PackageVersion] = package_index["package_version_list"]
+    if package_version not in package_version_list:
+        raise HTTPException(status_code=404, detail="Package version not found")
+
+    integration: AbstractIntegration | None = next(
+        (integration for integration in integrations if integration.id == package_index["integration_id"]), None
+    )
+    if integration is None:
+        raise HTTPException(status_code=404, detail="Integration not found")
+
+    return StreamingResponse(await integration.get_download_package(package_name, package_version))
