@@ -1,0 +1,50 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Python
+
+## General Rules
+- Use Python version define in [pyproject.toml](mdc:booking_backend/pyproject.toml).
+- Always add docstring on methods, use google python docstring format.
+- Always add type hint on methods, variables.
+- Always add return type on methods (including tests methods)
+- Always check src/ and tests/ to keep consistancy to the code.
+- Always use the virtualenv created in .venv before launch command.
+
+## General Application Architecture
+- Use the principle of clean architecture in your realisation.
+- Application is define in mutiple layers:
+
+### API Layer (src/api)
+API layer is responsible to manager the HTTP specific language. It must abstract the Http Specific when calling other layers. Api will talk principally to service layers through functional "language".
+
+### Service Layer (src/services)
+Responsible to manage the functional rules and execution.
+Use and manipulate the entities.
+
+### Entities Layer (src/services/entities)
+Main definition of the functional scope of the application with his data and rules.
+
+### Models (Database Resource) (src/models)
+The way to interact with de database through repositories pattern.
+
+## Tests
+- For tests, use pytest
+- Regroup tests by functional scope in class.
+- Always execute pytest after tests creation or update
+- After all tests are green, execute `pre-commit run --all-files` to validate linters
+
+
+### Integrations Tests
+- Use integration tests when we want to validation interaction with external resources like datase (mongodb)
+
+### Units Tests
+- Units Tests must not interact with real resources but use mock instead.
+
+# API
+- api are store in src/api.
+- router variable are name base on the route they define.
+- Use TestClient of FastAPI to do tests
+- Use dependency_overrides of FastAPI to inject Mock https://fastapi.tiangolo.com/advanced/testing-dependencies/

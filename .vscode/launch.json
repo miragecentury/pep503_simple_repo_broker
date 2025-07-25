@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Simple Repo Broker",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pep503_simple_repo_broker.__main__",
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.env",
+        },
+        // Provide a configuration for debugging tests
+        {
+            "name": "Python Debugger: Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [],
+            "justMyCode": false,
+            "purpose": [
+                "debug-test",
+                "debug-in-terminal"
+            ],
+            "pythonArgs": [
+                "-Xfrozen_modules=off"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Company : Velmios
+Velmios is the name of the Company.
+
+# Product
+
+The Product is a SaaS.
+The target customer is contents creator.
+
+It provide multiple Services:
+- a Web Application for the Public of the Customer.
+- a Mobile Application for the Public of the Customer.
+- a Portal for the Customer to manage it.
+
+Services :
+- aggregate all the contents created on all the platforms (Instagram, Youtube, Twitch, ...)
+- display all this content through the two Applications.
+- Event Calendar for the Customer to share Events to the Public (Reminder, ...)
+- Booking for the Public to do a Private or Public Session with the Customer
+- Help for publication to the different platform.
+- Messaging Aggregator
+- Members Management through integration with Platform like "Patreon" or internally.
+
+# Architecture
+
+We have also backends organize in microservice architecture.
+
+## Path to other projects :
+### Backends :
+- customer_backend : /home/miragecentury/projects/github/laelidona/customer_backend
+- event_backend : /home/miragecentury/projects/github/laelidona/event_backend
+- booking_backend : /home/miragecentury/projects/github/laelidona/booking_backend
+- instagram_integration_backend : /home/miragecentury/projects/github/laelidona/instagram_integration_backend
+### Frontends :
+- web_administration_application: /home/miragecentury/projects/github/laelidona/web_administration_application
+It's the "Customer" and "Admin" Portal
