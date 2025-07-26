@@ -1,0 +1,56 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: pep503-simple-repo-broker
+build:
+  tagPolicy:
+    gitCommit:
+      variant: Tags
+      ignoreChanges: false
+  artifacts:
+    - image: ghcr.io/miragecentury/pep503_simple_repo_brokers
+      context: .
+      runtimeType: python
+      custom:
+        buildCommand: |
+          pack build \
+            $IMAGE \
+            -B paketobuildpacks/builder-jammy-base \
+            --buildpack paketo-buildpacks/python \
+            --trust-builder \
+            --publish
+        dependencies:
+          paths:
+            - pyproject.toml
+            - poetry.lock
+            - src/*
+            - tests/*
+          ignore:
+            - kube/*
+            - .git/*
+            - .idea/*
+            - .pytest_cache/*
+            - .mypy_cache/*
+            - __pycache__/*
+            - .env
+      platforms:
+        - "linux/amd64"
+  platforms:
+    - "linux/amd64"
+  local:
+    push: true
+deploy:
+  kubectl:
+    defaultNamespace: velmios-pypi
+profiles:
+  - name: prd-mgt
+    requiresAllActivations: false
+    deploy:
+      kubeContext: admin@velmios-talos-prod-mgt
+      kubectl:
+        defaultNamespace: velmios-pypi
+    manifests:
+      rawYaml:
+        - kube/prd/mgt/deployment.yaml
+        - kube/prd/mgt/service.yaml
+        - kube/prd/mgt/ingress.yaml

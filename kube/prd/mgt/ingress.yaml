@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pep503-simple-repo-broker-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: cloudflare-velmios-io
+  labels:
+    app.kubernetes.io/name: pep503-simple-repo-broker
+    velmios.io/environment: prod
+    velmios.io/role: svc
+    velmios.io/color: mgt
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - pypi.velmios.io
+      secretName: velmios-services-ingress-tls
+  rules:
+    - host: pypi.velmios.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pep503-simple-repo-broker
+                port:
+                  number: 80

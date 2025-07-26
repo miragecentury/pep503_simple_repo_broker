@@ -6,7 +6,14 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from .html_renderer import HtmlListItem, HtmlListRenderer
 from .integrations.abstracts import AbstractIntegration, IntegrationPackageIndex, PackageName, PackageVersion
 
-api_router: APIRouter = APIRouter(prefix="/simple")
+api_router: APIRouter = APIRouter()
+api_router_simple: APIRouter = APIRouter()
+
+
+@api_router.get("/health")
+async def get_health() -> str:
+    """Get health."""
+    return "OK"
 
 
 def dependency_integrations(request: Request) -> list[AbstractIntegration]:
@@ -14,7 +21,7 @@ def dependency_integrations(request: Request) -> list[AbstractIntegration]:
     return getattr(request.app.state, "integrations", [])
 
 
-@api_router.get("/")
+@api_router_simple.get("/")
 async def get_index(integrations: list[AbstractIntegration] = Depends(dependency_integrations)) -> HTMLResponse:
     """Get simple repo index."""
     index: list[IntegrationPackageIndex] = []
@@ -25,7 +32,7 @@ async def get_index(integrations: list[AbstractIntegration] = Depends(dependency
     return HtmlListRenderer(title="Index").add_items(items).render()
 
 
-@api_router.get("/{package_name}")
+@api_router_simple.get("/{package_name}")
 async def get_index_package(
     package_name: PackageName,
     integrations: list[AbstractIntegration] = Depends(dependency_integrations),
@@ -48,7 +55,7 @@ async def get_index_package(
     return HtmlListRenderer(title=package_name).add_items(items).render()
 
 
-@api_router.get("/{package_name}/{package_version}")
+@api_router_simple.get("/{package_name}/{package_version}")
 async def get_download_package(
     package_name: PackageName,
     package_version: PackageVersion,
@@ -76,3 +83,6 @@ async def get_download_package(
         raise HTTPException(status_code=404, detail="Integration not found")
 
     return StreamingResponse(await integration.get_download_package(package_name, package_version))
+
+
+api_router.include_router(api_router_simple, prefix="/simple")

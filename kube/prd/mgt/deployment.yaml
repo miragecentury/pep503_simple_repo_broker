@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pep503-simple-repo-broker
+  labels:
+    app.kubernetes.io/name: pep503-simple-repo-broker
+    app: pep503-simple-repo-broker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pep503-simple-repo-broker
+  template:
+    metadata:
+      labels:
+        app: pep503-simple-repo-broker
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: ghcr-miragecentury
+      containers:
+        - name: pep503-simple-repo-broker
+          image: ghcr.io/miragecentury/pep503_simple_repo_brokers:latest
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          envFrom:
+            - configMapRef:
+                name: github-pypi
