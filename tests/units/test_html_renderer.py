@@ -32,13 +32,13 @@ class TestHtmlListRenderer:
         """Test HtmlListRenderer initialization with title."""
         renderer = HtmlListRenderer(title="Test Title")
         assert renderer.title == "Test Title"
-        assert renderer.items == []
+        assert renderer.items == []  # pylint: disable=use-implicit-booleaness-not-comparison
 
     def test_init_without_title(self) -> None:
         """Test HtmlListRenderer initialization without title."""
         renderer = HtmlListRenderer()
         assert renderer.title is None
-        assert renderer.items == []
+        assert renderer.items == []  # pylint: disable=use-implicit-booleaness-not-comparison
 
     def test_add_item(self) -> None:
         """Test adding single item to renderer."""
@@ -62,7 +62,7 @@ class TestHtmlListRenderer:
         result = renderer.add_items(items)
 
         assert result is renderer  # Test method chaining
-        assert len(renderer.items) == 2
+        assert len(renderer.items) == 2  # noqa: PLR2004
         assert renderer.items == items
 
     def test_add_items_empty_list(self) -> None:
@@ -199,7 +199,7 @@ class TestHtmlListRenderer:
         assert result2 is renderer
 
         # Verify all items were added
-        assert len(renderer.items) == 3
+        assert len(renderer.items) == 3  # noqa: PLR2004
         assert renderer.items[0]["name"] == "Item 1"
         assert renderer.items[1]["name"] == "Item 2"
         assert renderer.items[2]["name"] == "Item 3"

@@ -13,6 +13,8 @@ class TestMain:
 
     def test_main_exists(self) -> None:
         """Test that main exists."""
-        from pep503_simple_repo_broker.__main__ import main  # noqa: PLC0415 # pylint: disable=import-outside-toplevel
+        from pep503_simple_repo_broker.__main__ import (  # noqa: PLC0415 # pylint: disable=import-outside-toplevel
+            main,
+        )
 
         assert main is not None

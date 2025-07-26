@@ -42,7 +42,9 @@ class HtmlListRenderer(AbstractHtmlRenderer):
 
     def build_body(self) -> str:
         """Build HTML List Body."""
-        return "".join([f"<a href='{item['url']}'>{item['name']}</a>" for item in self.items])  # pylint: disable=inconsistent-quotes
+        return "".join(
+            [f"<a href='{item['url']}'>{item['name']}</a>" for item in self.items]  # pylint: disable=inconsistent-quotes
+        )
 
     def build_head(self) -> str:
         """Build HTML List Head."""

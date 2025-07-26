@@ -7,7 +7,11 @@ import uvicorn
 from fastapi import FastAPI
 
 from .integrations.abstracts import AbstractIntegration, PackageName
-from .integrations.github import GithubIntegration, GithubNamespace, GithubRepositoryName
+from .integrations.github import (
+    GithubIntegration,
+    GithubNamespace,
+    GithubRepositoryName,
+)
 
 
 class Application:
@@ -42,7 +46,9 @@ class Application:
 
         setattr(self._fastapi_app.state, "integrations", self._integrations)
 
-        from .api import api_router  # pylint: disable=import-outside-toplevel # noqa: PLC0415
+        from .api import (  # noqa: PLC0415 # pylint: disable=import-outside-toplevel
+            api_router,
+        )
 
         self._fastapi_app.include_router(api_router)
 

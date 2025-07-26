@@ -10,7 +10,9 @@ GithubRepositoryName = NewType("GithubRepositoryName", str)
 GithubRepositorySlug = NewType("GithubRepositorySlug", str)
 
 
-def get_github_repository_slug(namespace: GithubNamespace, name: GithubRepositoryName) -> GithubRepositorySlug:
+def get_github_repository_slug(
+    namespace: GithubNamespace, name: GithubRepositoryName
+) -> GithubRepositorySlug:
     """Get github repository slug."""
     if namespace == "" or name == "":
         raise ValueError("Namespace and name must be set")

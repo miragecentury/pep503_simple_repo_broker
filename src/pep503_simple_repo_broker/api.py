@@ -4,7 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 
 from .html_renderer import HtmlListItem, HtmlListRenderer
-from .integrations.abstracts import AbstractIntegration, IntegrationPackageIndex, PackageName, PackageVersion
+from .integrations.abstracts import (
+    AbstractIntegration,
+    IntegrationPackageIndex,
+    PackageName,
+    PackageVersion,
+)
 
 api_router: APIRouter = APIRouter()
 api_router_simple: APIRouter = APIRouter()
@@ -22,13 +27,19 @@ def dependency_integrations(request: Request) -> list[AbstractIntegration]:
 
 
 @api_router_simple.get("/")
-async def get_index(integrations: list[AbstractIntegration] = Depends(dependency_integrations)) -> HTMLResponse:
+async def get_index(
+    integrations: list[AbstractIntegration] = Depends(dependency_integrations),
+) -> HTMLResponse:
     """Get simple repo index."""
     index: list[IntegrationPackageIndex] = []
     for integration in integrations:
         index.extend(await integration.get_index())
-    packages: list[PackageName] = [package_index["package_name"] for package_index in index]
-    items: list[HtmlListItem] = [HtmlListItem(name=package, url=f"/simple/{package}") for package in packages]
+    packages: list[PackageName] = [
+        package_index["package_name"] for package_index in index
+    ]
+    items: list[HtmlListItem] = [
+        HtmlListItem(name=package, url=f"/simple/{package}") for package in packages
+    ]
     return HtmlListRenderer(title="Index").add_items(items).render()
 
 
@@ -42,13 +53,20 @@ async def get_index_package(
     for integration in integrations:
         index.extend(await integration.get_index())
     package_index: IntegrationPackageIndex | None = next(
-        (package_index for package_index in index if package_index["package_name"] == package_name), None
+        (
+            package_index
+            for package_index in index
+            if package_index["package_name"] == package_name
+        ),
+        None,
     )
     if package_index is None:
         raise HTTPException(status_code=404, detail="Package not found")
 
     items: list[HtmlListItem] = [
-        HtmlListItem(name=package_version, url=f"/simple/{package_name}/{package_version}")
+        HtmlListItem(
+            name=package_version, url=f"/simple/{package_name}/{package_version}"
+        )
         for package_version in package_index["package_version_list"]
     ]
 
@@ -67,7 +85,12 @@ async def get_download_package(
         index.extend(await integration.get_index())
 
     package_index: IntegrationPackageIndex | None = next(
-        (package_index for package_index in index if package_index["package_name"] == package_name), None
+        (
+            package_index
+            for package_index in index
+            if package_index["package_name"] == package_name
+        ),
+        None,
     )
     if package_index is None:
         raise HTTPException(status_code=404, detail="Package not found")
@@ -77,12 +100,19 @@ async def get_download_package(
         raise HTTPException(status_code=404, detail="Package version not found")
 
     integration: AbstractIntegration | None = next(
-        (integration for integration in integrations if integration.id == package_index["integration_id"]), None
+        (
+            integration
+            for integration in integrations
+            if integration.id == package_index["integration_id"]
+        ),
+        None,
     )
     if integration is None:
         raise HTTPException(status_code=404, detail="Integration not found")
 
-    return StreamingResponse(await integration.get_download_package(package_name, package_version))
+    return StreamingResponse(
+        await integration.get_download_package(package_name, package_version)
+    )
 
 
 api_router.include_router(api_router_simple, prefix="/simple")

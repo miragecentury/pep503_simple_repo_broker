@@ -5,11 +5,21 @@ import uuid
 from collections.abc import AsyncGenerator
 
 from fastapi import HTTPException
-from fastapi.responses import StreamingResponse
 
-from ..abstracts import AbstractIntegration, IntegrationId, IntegrationPackageIndex, PackageName, PackageVersion
+from ..abstracts import (
+    AbstractIntegration,
+    IntegrationId,
+    IntegrationPackageIndex,
+    PackageName,
+    PackageVersion,
+)
 from .repository import GithubRepository
-from .types import GithubRepositoryReference, GithubRepositorySlug, GithubToken, get_github_repository_slug
+from .types import (
+    GithubRepositoryReference,
+    GithubRepositorySlug,
+    GithubToken,
+    get_github_repository_slug,
+)
 
 
 class GithubIntegration(AbstractIntegration):
@@ -32,10 +42,14 @@ class GithubIntegration(AbstractIntegration):
         self._indexes_by_slug: dict[GithubRepositorySlug, IntegrationPackageIndex] = {}
         if repositories is not None:
             for repository in repositories:
-                slug: GithubRepositorySlug = get_github_repository_slug(repository["namespace"], repository["name"])
+                slug: GithubRepositorySlug = get_github_repository_slug(
+                    repository["namespace"], repository["name"]
+                )
                 if slug in self._repositories:
                     raise ValueError(f"Repository {slug} already exists")
-                self._repositories[slug] = GithubRepository(self._github_token, repository, self._integration_id)
+                self._repositories[slug] = GithubRepository(
+                    self._github_token, repository, self._integration_id
+                )
 
     @property
     def id(self) -> IntegrationId:
@@ -58,14 +72,23 @@ class GithubIntegration(AbstractIntegration):
         """Get download package."""
         # Identify the repository slug based on the package name
         repository_slug: GithubRepositorySlug | None = next(
-            (slug for slug, index in self._indexes_by_slug.items() if index["package_name"] == package_name), None
+            (
+                slug
+                for slug, index in self._indexes_by_slug.items()
+                if index["package_name"] == package_name
+            ),
+            None,
         )
         if repository_slug is None:
             raise HTTPException(status_code=404, detail="Repository not found")
 
         # Identify the package version based on the package name and version
-        package_version_list: list[PackageVersion] = self._indexes_by_slug[repository_slug]["package_version_list"]
+        package_version_list: list[PackageVersion] = self._indexes_by_slug[
+            repository_slug
+        ]["package_version_list"]
         if package_version not in package_version_list:
             raise HTTPException(status_code=404, detail="Package version not found")
 
-        return await self._repositories[repository_slug].get_download_package(package_name, package_version)
+        return await self._repositories[repository_slug].get_download_package(
+            package_name, package_version
+        )

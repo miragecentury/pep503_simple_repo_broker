@@ -1,0 +1,86 @@
+default_language_version:
+  python: python3.12
+default_stages:
+  - "pre-push"
+  - "pre-commit"
+  - "manual"
+repos:
+  - repo: local
+    hooks:
+      - id: poetry lock and update
+        name: poetry lock and update
+        entry: "poetry"
+        args: ["update", "--with=test", "--sync"]
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        stages:
+          - "pre-push"
+          - "manual"
+      - id: pytest
+        name: pytest
+        entry: "./.venv/bin/pytest"
+        args:
+          - "tests/units"
+          - "--cov=src"
+          - "--cov-report=lcov:build/coverage.lcov"
+          - "--junitxml=build/junit.xml"
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        stages:
+          - "pre-push"
+          - "pre-commit"
+          - "manual"
+      - id: mypy
+        name: mypy
+        entry: "./.venv/bin/mypy"
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        stages:
+          - "pre-push"
+          - "manual"
+      - id: ruff
+        name: ruff
+        language: system
+        entry: "./.venv/bin/ruff"
+        types: [python]
+        pass_filenames: false
+        args: ["check", "src", "tests", "--fix"]
+        stages:
+          - "pre-push"
+          - "pre-commit"
+          - "manual"
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        stages:
+          - "pre-push"
+          - "pre-commit"
+          - "manual"
+      - id: end-of-file-fixer
+        stages:
+          - "pre-push"
+          - "pre-commit"
+          - "manual"
+  - repo: https://github.com/pylint-dev/pylint
+    rev: v3.2.2
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: "./.venv/bin/pylint"
+        language: system
+        types: [python]
+        # Not that problematic to run in parallel see Pre-commit
+        # integration in the doc for details
+        # require_serial: true
+        args: ["-rn", "-sn", "--rcfile=pylintrc", "--fail-on=I", "-j=4"]
+        stages:
+          - "pre-push"
+          - "pre-commit"
+          - "manual"

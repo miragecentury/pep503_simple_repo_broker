@@ -1,13 +1,17 @@
 """Github release API."""
 
+from collections.abc import AsyncGenerator
 from http import HTTPStatus
-from typing import AsyncGenerator
 
 from aiohttp import ClientSession
 from fastapi import HTTPException
-from pydantic import HttpUrl
 
-from ..abstracts import IntegrationId, IntegrationPackageIndex, PackageName, PackageVersion
+from ..abstracts import (
+    IntegrationId,
+    IntegrationPackageIndex,
+    PackageName,
+    PackageVersion,
+)
 from .objects import GithubReleaseObject
 from .types import GithubRepositoryReference, GithubToken
 
@@ -36,11 +40,11 @@ class GithubRepositoryApi:
 
     async def retrieve_releases(self) -> list[GithubReleaseObject]:
         """Retrieve releases."""
-        url: str = f"/repos/{self._repository['namespace']}/{self._repository['name']}/releases"
+        url: str = f"/repos/{self._repository['namespace']}/{self._repository['name']}/releases"  # pylint: disable=inconsistent-quotes
         async with self.acquire_session() as session:
             async with session.get(url) as response:
                 if response.status != HTTPStatus.OK:
-                    raise Exception(f"Failed to retrieve releases: {response.status}")
+                    raise Exception(f"Failed to retrieve releases: {response.status}")  # pylint: disable=broad-exception-raised
                 return [GithubReleaseObject.model_validate(release) for release in await response.json()]
 
     async def download_asset(self, url: str) -> AsyncGenerator[bytes, None]:
@@ -53,7 +57,9 @@ class GithubRepositoryApi:
                     yield content
 
 
-def transform_release_to_package_version(release: GithubReleaseObject) -> list[PackageVersion]:
+def transform_release_to_package_version(
+    release: GithubReleaseObject,
+) -> list[PackageVersion]:
     """Transform release to package version."""
     package_version_list: list[PackageVersion] = []
 
@@ -68,7 +74,10 @@ class GithubRepository:
     """Github repository."""
 
     def __init__(
-        self, github_token: GithubToken, repository: GithubRepositoryReference, integration_id: IntegrationId
+        self,
+        github_token: GithubToken,
+        repository: GithubRepositoryReference,
+        integration_id: IntegrationId,
     ) -> None:
         """Initialize Github release API."""
         self._github_token: GithubToken = github_token
@@ -90,7 +99,9 @@ class GithubRepository:
         }
 
     async def get_download_package(
-        self, package_name: PackageName, package_version: PackageVersion
+        self,
+        package_name: PackageName,  # pylint: disable=unused-argument
+        package_version: PackageVersion,
     ) -> AsyncGenerator[bytes, None]:
         """Get download package."""
         releases: list[GithubReleaseObject] = await self._api.retrieve_releases()
