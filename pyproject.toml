@@ -41,7 +41,7 @@ pre-commit = "^4.0.1"
 pyupgrade = "^3.15.2"
 pytest = "^8.2.0"
 pytest-xdist = "^3.6.1"
-pytest-cov = "^6.0.0"
+pytest-cov = "^7.0.0"
 ruff = "^0.13.0"
 pytest-asyncio = "^1.0.0"
 testcontainers = { version="^4.9.0", extras=["mongodb", "redis"] }
