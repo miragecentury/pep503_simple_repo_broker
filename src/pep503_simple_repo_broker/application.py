@@ -29,7 +29,12 @@ class Application:
                         "namespace": GithubNamespace(os.getenv("GITHUB_NAMESPACE", "")),
                         "name": GithubRepositoryName(os.getenv("GITHUB_REPOSITORY_NAME", "")),
                         "package_name": PackageName(os.getenv("GITHUB_PACKAGE_NAME", "")),
-                    }
+                    },
+                    {
+                        "namespace": GithubNamespace(os.getenv("GITHUB_NAMESPACE_2", "")),
+                        "name": GithubRepositoryName(os.getenv("GITHUB_REPOSITORY_NAME_2", "")),
+                        "package_name": PackageName(os.getenv("GITHUB_PACKAGE_NAME_2", "")),
+                    },
                 ]
             )
         ]
